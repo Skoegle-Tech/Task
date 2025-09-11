@@ -17,7 +17,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001","https://teamtaskify.netlify.app"],
+    origin: ["http://localhost:3000", "https://task.skoegle.com","https://task-client-ekjh.onrender.com"],
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true,
   })
