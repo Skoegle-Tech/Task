@@ -178,15 +178,20 @@ const getTasks = asyncHandler(async (req, res) => {
   const { userId, isAdmin } = req.user;
   const { stage, isTrashed, search } = req.query;
 
+  // base query
   let query = { isTrashed: isTrashed ? true : false };
 
-  if (!isAdmin) {
+  // ✅ condition: if admin & no stage → see all, else filter by team
+  if (!(isAdmin && !stage)) {
     query.team = { $all: [userId] };
   }
+
+  // stage filter
   if (stage) {
     query.stage = stage;
   }
 
+  // search filter
   if (search) {
     const searchQuery = {
       $or: [
@@ -198,14 +203,12 @@ const getTasks = asyncHandler(async (req, res) => {
     query = { ...query, ...searchQuery };
   }
 
-  let queryResult = Task.find(query)
+  const tasks = await Task.find(query)
     .populate({
       path: "team",
       select: "name title email",
     })
     .sort({ _id: -1 });
-
-  const tasks = await queryResult;
 
   res.status(200).json({
     status: true,
