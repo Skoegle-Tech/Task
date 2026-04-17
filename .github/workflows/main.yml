@@ -1,0 +1,35 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 3. Build Image
+      - name: Build Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/taskapp:latest .
+
+      # 4. Tag Image (versioned)
+      - name: Tag Image
+        run: docker tag ${{ secrets.DOCKER_USERNAME }}/taskapp:latest ${{ secrets.DOCKER_USERNAME }}/taskapp:${{ github.run_number }}
+
+      # 5. Push Images
+      - name: Push Images
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/taskapp:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/taskapp:${{ github.run_number }}
