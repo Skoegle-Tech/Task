@@ -6,7 +6,7 @@ import morgan from "morgan";
 import { errorHandler, routeNotFound } from "./middleware/errorMiddleware.js";
 import routes from "./routes/index.js";
 import dbConnection from "./utils/connectDB.js";
-
+import compression  from "compression";
 dotenv.config();
 
 dbConnection();
@@ -25,7 +25,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(compression());
 app.use(cookieParser());
 app.get("/", (req, res) => {
   res.send("API is running...");
